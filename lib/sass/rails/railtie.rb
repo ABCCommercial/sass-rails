@@ -63,8 +63,14 @@ module Sass::Rails
         # Display a stack trace in the css output when in development-like environments.
         config.sass.full_exception = app.config.consider_all_requests_local
       end
-      app.assets.context_class.extend(SassContext)
-      app.assets.context_class.sass_config = app.config.sass
+
+     ## BugFix: When asset pipelining is disable it errors with context_class called on nil.
+     ## We cannot upgrade to the fix version where this bug is fixed so, fixing it here
+     ## https://github.com/rails/sass-rails/commit/636f668e6f80832833669546a605f09422eb1253
+     if app.assets
+       app.assets.context_class.extend(SassContext)
+       app.assets.context_class.sass_config = app.config.sass
+     end
 
       Sass.logger = app.config.sass.logger
     end
